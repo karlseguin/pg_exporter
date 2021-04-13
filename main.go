@@ -179,17 +179,17 @@ func NewExporter(opts ExporterOpts) *Exporter {
 		dbConflDeadlock:   prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "confl_deadlock"}, databaseLabels),
 
 		//table metrics
-		tblSeqScan:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "user_seq_scan"}, databaseAndTableLabels),
-		tblSeqTupRead:       prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "user_seq_tup_read"}, databaseAndTableLabels),
-		tblIdxScan:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "user_idx_scan"}, databaseAndTableLabels),
-		tblIdxTupFetch:      prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "user_idx_tup_read"}, databaseAndTableLabels),
-		tblNTupIns:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "user_n_tup_ins"}, databaseAndTableLabels),
-		tblNTupUpd:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "user_n_tup_upd"}, databaseAndTableLabels),
-		tblNTupDel:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "user_n_tup_del"}, databaseAndTableLabels),
-		tblNTupHotUpd:       prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "user_n_tup_hot_upd"}, databaseAndTableLabels),
-		tblNLiveTup:         prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "user_n_live_tup"}, databaseAndTableLabels),
-		tblNDeadTup:         prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "user_n_dead_tup"}, databaseAndTableLabels),
-		tblNModSinceAnalyze: prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "user_n_mod_since_analyze"}, databaseAndTableLabels),
+		tblSeqScan:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_seq_scan"}, databaseAndTableLabels),
+		tblSeqTupRead:       prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_seq_tup_read"}, databaseAndTableLabels),
+		tblIdxScan:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_idx_scan"}, databaseAndTableLabels),
+		tblIdxTupFetch:      prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_idx_tup_read"}, databaseAndTableLabels),
+		tblNTupIns:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_tup_ins"}, databaseAndTableLabels),
+		tblNTupUpd:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_tup_upd"}, databaseAndTableLabels),
+		tblNTupDel:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_tup_del"}, databaseAndTableLabels),
+		tblNTupHotUpd:       prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_tup_hot_upd"}, databaseAndTableLabels),
+		tblNLiveTup:         prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_live_tup"}, databaseAndTableLabels),
+		tblNDeadTup:         prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_dead_tup"}, databaseAndTableLabels),
+		tblNModSinceAnalyze: prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_mod_since_analyze"}, databaseAndTableLabels),
 	}
 }
 
