@@ -4,7 +4,7 @@ The goal of this exporter is to export database and table metrics. This is diffe
 
 ```
     pg_exporter -h 127.0.0.1 -p 5432 -u user -passwordFile=/path/to/pw \
-       -exlude db1,db2 -listen 0.0.0.0:9187 -logLevel error
+       -exclude "db1,db2" -listen 0.0.0.0:9187 -logLevel error
 ```
 
 ## Command Line Arguments
@@ -14,6 +14,7 @@ The goal of this exporter is to export database and table metrics. This is diffe
 * `-u USER` - postgresql user to use
 * `-d DATABASE` - main database to connect to (defaults to postgres)
 * `-passwordFile PATH` - path to the file containing the password
+* `-exclude LIST` - database(s) to exclude
 * `-listen IP:PORT` - address to listen on (defaults to 127.0.0.1:9187)
 * `-path PATH` - path where metrics are avaialble (defaults to /)
 * `-prefix PREFIX` - prefixes appended to metrics (defaults to pg_)
