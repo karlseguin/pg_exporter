@@ -129,14 +129,14 @@ type Exporter struct {
 	dbConflDeadlock   *prometheus.GaugeVec
 
 	//table metrics
-	tblSeqScan          *prometheus.GaugeVec
-	tblSeqTupRead       *prometheus.GaugeVec
-	tblIdxScan          *prometheus.GaugeVec
-	tblIdxTupFetch      *prometheus.GaugeVec
-	tblNTupIns          *prometheus.GaugeVec
-	tblNTupUpd          *prometheus.GaugeVec
-	tblNTupDel          *prometheus.GaugeVec
-	tblNTupHotUpd       *prometheus.GaugeVec
+	tblSeqScan          *prometheus.CounterVec
+	tblSeqTupRead       *prometheus.CounterVec
+	tblIdxScan          *prometheus.CounterVec
+	tblIdxTupFetch      *prometheus.CounterVec
+	tblNTupIns          *prometheus.CounterVec
+	tblNTupUpd          *prometheus.CounterVec
+	tblNTupDel          *prometheus.CounterVec
+	tblNTupHotUpd       *prometheus.CounterVec
 	tblNLiveTup         *prometheus.GaugeVec
 	tblNDeadTup         *prometheus.GaugeVec
 	tblNModSinceAnalyze *prometheus.GaugeVec
@@ -179,14 +179,14 @@ func NewExporter(opts ExporterOpts) *Exporter {
 		dbConflDeadlock:   prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "confl_deadlock"}, databaseLabels),
 
 		//table metrics
-		tblSeqScan:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_seq_scan"}, databaseAndTableLabels),
-		tblSeqTupRead:       prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_seq_tup_read"}, databaseAndTableLabels),
-		tblIdxScan:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_idx_scan"}, databaseAndTableLabels),
-		tblIdxTupFetch:      prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_idx_tup_read"}, databaseAndTableLabels),
-		tblNTupIns:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_tup_ins"}, databaseAndTableLabels),
-		tblNTupUpd:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_tup_upd"}, databaseAndTableLabels),
-		tblNTupDel:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_tup_del"}, databaseAndTableLabels),
-		tblNTupHotUpd:       prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_tup_hot_upd"}, databaseAndTableLabels),
+		tblSeqScan:          prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_seq_scan"}, databaseAndTableLabels),
+		tblSeqTupRead:       prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_seq_tup_read"}, databaseAndTableLabels),
+		tblIdxScan:          prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_idx_scan"}, databaseAndTableLabels),
+		tblIdxTupFetch:      prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_idx_tup_read"}, databaseAndTableLabels),
+		tblNTupIns:          prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_n_tup_ins"}, databaseAndTableLabels),
+		tblNTupUpd:          prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_n_tup_upd"}, databaseAndTableLabels),
+		tblNTupDel:          prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_n_tup_del"}, databaseAndTableLabels),
+		tblNTupHotUpd:       prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_n_tup_hot_upd"}, databaseAndTableLabels),
 		tblNLiveTup:         prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_live_tup"}, databaseAndTableLabels),
 		tblNDeadTup:         prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_dead_tup"}, databaseAndTableLabels),
 		tblNModSinceAnalyze: prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_mod_since_analyze"}, databaseAndTableLabels),
@@ -384,14 +384,14 @@ func (e *Exporter) collectTables(c chan<- prometheus.Metric, database string) {
 			return
 		}
 
-		gauge(c, e.tblSeqScan, float64(seqScan), database, relname)
-		gauge(c, e.tblSeqTupRead, float64(seqTupRead), database, relname)
-		gauge(c, e.tblIdxScan, float64(idxScan), database, relname)
-		gauge(c, e.tblIdxTupFetch, float64(idxTupFetch), database, relname)
-		gauge(c, e.tblNTupIns, float64(nTupIns), database, relname)
-		gauge(c, e.tblNTupUpd, float64(nTupUpd), database, relname)
-		gauge(c, e.tblNTupDel, float64(nTupDel), database, relname)
-		gauge(c, e.tblNTupHotUpd, float64(nTupHotUpd), database, relname)
+		counter(c, e.tblSeqScan, float64(seqScan), database, relname)
+		counter(c, e.tblSeqTupRead, float64(seqTupRead), database, relname)
+		counter(c, e.tblIdxScan, float64(idxScan), database, relname)
+		counter(c, e.tblIdxTupFetch, float64(idxTupFetch), database, relname)
+		counter(c, e.tblNTupIns, float64(nTupIns), database, relname)
+		counter(c, e.tblNTupUpd, float64(nTupUpd), database, relname)
+		counter(c, e.tblNTupDel, float64(nTupDel), database, relname)
+		counter(c, e.tblNTupHotUpd, float64(nTupHotUpd), database, relname)
 		gauge(c, e.tblNLiveTup, float64(nLiveTup), database, relname)
 		gauge(c, e.tblNDeadTup, float64(nDeadTup), database, relname)
 		gauge(c, e.tblNModSinceAnalyze, float64(nModSinceAnalyze), database, relname)
@@ -405,5 +405,15 @@ func gauge(c chan<- prometheus.Metric, g *prometheus.GaugeVec, value float64, la
 	} else {
 		gauge.Set(value)
 		c <- gauge
+	}
+}
+
+func counter(c chan<- prometheus.Metric, cnt *prometheus.CounterVec, value float64, labels ...string) {
+	counter, err := cnt.GetMetricWithLabelValues(labels...)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to create counter")
+	} else {
+		counter.Add(value)
+		c <- counter
 	}
 }
