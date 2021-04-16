@@ -30,6 +30,7 @@ func main() {
 	path := flag.String("path", "/", "path to expose metrics")
 	prefix := flag.String("prefix", "pg_", "stats prefix")
 	listen := flag.String("listen", "127.0.0.1:9187", "listen address")
+	minRows := flag.Int("minRows", 0, "ignores tables with fewer than specified number of rows")
 	noGoStates := flag.Bool("noGoStats", false, "set to true to skip collecting built-in go stats")
 	noProcessStats := flag.Bool("noProcessStats", false, "set to true to skip collecting built-in process stats")
 
@@ -79,6 +80,7 @@ func main() {
 
 	exporter := NewExporter(ExporterOpts{
 		prefix:            *prefix,
+		minRows:           *minRows,
 		connConfig:        connConfig,
 		excludedDatabases: excludes,
 	})
@@ -91,12 +93,14 @@ func main() {
 
 type ExporterOpts struct {
 	prefix            string
+	minRows           int
 	connConfig        *pgx.ConnConfig
 	excludedDatabases []string
 }
 
 type Exporter struct {
 	sync.Mutex
+	minRows           int
 	excludedDatabases []string
 	connConfig        *pgx.ConnConfig
 
@@ -147,6 +151,7 @@ func NewExporter(opts ExporterOpts) *Exporter {
 	databaseAndTableLabels := []string{"database", "table"}
 
 	return &Exporter{
+		minRows:           opts.minRows,
 		connConfig:        opts.connConfig,
 		excludedDatabases: opts.excludedDatabases,
 
@@ -361,9 +366,11 @@ func (e *Exporter) collectTables(c chan<- prometheus.Metric, database string) {
 			coalesce(n_live_tup, 0),
 			coalesce(n_dead_tup, 0),
 			n_mod_since_analyze
-		from pg_stat_user_tables`
+		from pg_stat_user_tables
+		where coalesce(n_live_tup, 0) > $1
+		`
 
-	rows, err := conn.Query(context.Background(), sql)
+	rows, err := conn.Query(context.Background(), sql, e.minRows)
 	if err != nil {
 		log.Error().Err(err).Str("database", database).Msg("collectTables")
 		return

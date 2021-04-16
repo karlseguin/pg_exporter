@@ -20,3 +20,4 @@ The goal of this exporter is to export database and table metrics. This is diffe
 * `-prefix PREFIX` - prefixes appended to metrics (defaults to pg_)
 * `-noGoStats` - don't include go metrics about the pg_exporter process itself
 * `-noProcessStats` - don't include process metrics about the pg_exporter process itself
+* `-minRows` - ignore tables with less rows than the specified amount (defaults to 0)
