@@ -24,8 +24,9 @@ func main() {
 	user := flag.String("u", "", "db user")
 	host := flag.String("h", "127.0.0.1", "db host")
 	database := flag.String("d", "postgres", "db name")
+	password := flag.String("password", "", "db password (use passwordFile instead when possible)")
 	passwordFile := flag.String("passwordFile", "", "path to file containing password")
-	excludedDatabases := flag.String("exclude", "", "databases to exclude")
+	exclude := flag.String("exclude", "", "databases and tables to exclude")
 
 	path := flag.String("path", "/", "path to expose metrics")
 	prefix := flag.String("prefix", "pg_", "stats prefix")
@@ -59,11 +60,16 @@ func main() {
 		registry.MustRegister(prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}))
 	}
 
-	passBytes, err := ioutil.ReadFile(*passwordFile)
-	if err != nil {
-		log.Fatal().Err(err).Str("path", *passwordFile).Msg("failed to open password file")
+	var pass string
+	if len(*password) != 0 {
+		pass = strings.TrimSpace(*password)
+	} else {
+		passBytes, err := ioutil.ReadFile(*passwordFile)
+		if err != nil {
+			log.Fatal().Err(err).Str("path", *passwordFile).Msg("failed to open password file")
+		}
+		pass = strings.TrimSpace(string(passBytes))
 	}
-	pass := strings.TrimSpace(string(passBytes))
 
 	uri := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", *user, pass, *host, *port, *database)
 	connConfig, err := pgx.ParseConfig(uri)
@@ -73,16 +79,11 @@ func main() {
 		log.Fatal().Str("error", safeErr).Str("uri", safeUri).Msg("invalid connection string")
 	}
 
-	excludes := strings.Split(*excludedDatabases, ",")
-	for i, db := range excludes {
-		excludes[i] = strings.TrimSpace(db)
-	}
-
 	exporter := NewExporter(ExporterOpts{
-		prefix:            *prefix,
-		minRows:           *minRows,
-		connConfig:        connConfig,
-		excludedDatabases: excludes,
+		prefix:     *prefix,
+		minRows:    *minRows,
+		connConfig: connConfig,
+		exclude:    parseExclude(*exclude),
 	})
 	registry.MustRegister(exporter)
 
@@ -91,18 +92,23 @@ func main() {
 	log.Fatal().Err(http.ListenAndServe(*listen, nil)).Send()
 }
 
+type Exclude struct {
+	databases []string
+	tables    map[string][]string
+}
+
 type ExporterOpts struct {
-	prefix            string
-	minRows           int
-	connConfig        *pgx.ConnConfig
-	excludedDatabases []string
+	prefix     string
+	minRows    int
+	connConfig *pgx.ConnConfig
+	exclude    Exclude
 }
 
 type Exporter struct {
 	sync.Mutex
-	minRows           int
-	excludedDatabases []string
-	connConfig        *pgx.ConnConfig
+	minRows    int
+	exclude    Exclude
+	connConfig *pgx.ConnConfig
 
 	// global metrics
 	glbBuffersClean        prometheus.Gauge
@@ -151,9 +157,9 @@ func NewExporter(opts ExporterOpts) *Exporter {
 	databaseAndTableLabels := []string{"database", "table"}
 
 	return &Exporter{
-		minRows:           opts.minRows,
-		connConfig:        opts.connConfig,
-		excludedDatabases: opts.excludedDatabases,
+		minRows:    opts.minRows,
+		exclude:    opts.exclude,
+		connConfig: opts.connConfig,
 
 		// global metrics
 		glbBuffersClean:        prometheus.NewGauge(prometheus.GaugeOpts{Name: opts.prefix + "bgw_buffers_clean"}),
@@ -286,12 +292,12 @@ func (e *Exporter) collectDatabases(c chan<- prometheus.Metric, conn *pgx.Conn) 
 			c.confl_deadlock
 		from pg_database as d
 			join pg_stat_database as s using (datname)
-			join pg_stat_database_conflicts as c using(datname)
+			join pg_stat_database_conflicts as c using (datname)
 		where d.datname is not null
 			and d.datallowconn
-			and d.datname != all($1)`
+			and ($1::text[] is null or d.datname != all($1))`
 
-	rows, err := conn.Query(context.Background(), sql, e.excludedDatabases)
+	rows, err := conn.Query(context.Background(), sql, e.exclude.databases)
 	if err != nil {
 		log.Error().Err(err).Msg("collectDatabase")
 		return nil
@@ -367,10 +373,11 @@ func (e *Exporter) collectTables(c chan<- prometheus.Metric, database string) {
 			coalesce(n_dead_tup, 0),
 			n_mod_since_analyze
 		from pg_stat_user_tables
-		where coalesce(n_live_tup, 0) > $1
+		where coalesce(n_live_tup, 0) >= $1
+			and ($2::text[] is null or relname != all($2))
 		`
 
-	rows, err := conn.Query(context.Background(), sql, e.minRows)
+	rows, err := conn.Query(context.Background(), sql, e.minRows, e.exclude.tables[database])
 	if err != nil {
 		log.Error().Err(err).Str("database", database).Msg("collectTables")
 		return
@@ -422,5 +429,40 @@ func counter(c chan<- prometheus.Metric, cnt *prometheus.CounterVec, value float
 	} else {
 		counter.Add(value)
 		c <- counter
+	}
+}
+
+func parseExclude(exclude string) Exclude {
+	exclude = strings.TrimSpace(exclude)
+	if len(exclude) == 0 {
+		return Exclude{}
+	}
+
+	databases := make([]string, 0, 2)
+	tables := make(map[string][]string)
+	parts := strings.Split(exclude, ",")
+
+	for _, part := range parts {
+		part = strings.TrimSpace(part)
+		entry := strings.Split(part, ":")
+		if len(entry) == 1 {
+			database := entry[0]
+			databases = append(databases, database)
+			log.Info().Str("database", database).Msg("excluding database")
+		} else if len(entry) == 2 {
+			table := entry[1]
+			database := entry[0]
+			if t, ok := tables[database]; ok {
+				tables[database] = append(t, table)
+			} else {
+				tables[database] = []string{table}
+			}
+			log.Info().Str("database", database).Str("table", table).Msg("excluding table")
+		}
+	}
+
+	return Exclude{
+		tables:    tables,
+		databases: databases,
 	}
 }
