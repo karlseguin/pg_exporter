@@ -4,7 +4,7 @@ The goal of this exporter is to export database and table metrics. This is diffe
 
 ```
     pg_exporter -h 127.0.0.1 -p 5432 -u user -passwordFile=/path/to/pw \
-       -exclude "db1,db2,db2:tblX,db3:tblY" -listen 0.0.0.0:9187 -logLevel error
+       -exclude "db1;db2;db2:tblX;db3:tblY,tblZ" -listen 0.0.0.0:9187 -logLevel error
 ```
 
 ## Command Line Arguments

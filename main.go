@@ -440,7 +440,7 @@ func parseExclude(exclude string) Exclude {
 
 	databases := make([]string, 0, 2)
 	tables := make(map[string][]string)
-	parts := strings.Split(exclude, ",")
+	parts := strings.Split(exclude, ";")
 
 	for _, part := range parts {
 		part = strings.TrimSpace(part)
@@ -450,14 +450,15 @@ func parseExclude(exclude string) Exclude {
 			databases = append(databases, database)
 			log.Info().Str("database", database).Msg("excluding database")
 		} else if len(entry) == 2 {
-			table := entry[1]
 			database := entry[0]
-			if t, ok := tables[database]; ok {
-				tables[database] = append(t, table)
-			} else {
-				tables[database] = []string{table}
+			for _, table := range strings.Split(strings.TrimSpace(entry[1]), ",") {
+				if t, ok := tables[database]; ok {
+					tables[database] = append(t, table)
+				} else {
+					tables[database] = []string{table}
+				}
+				log.Info().Str("database", database).Str("table", table).Msg("excluding table")
 			}
-			log.Info().Str("database", database).Str("table", table).Msg("excluding table")
 		}
 	}
 
