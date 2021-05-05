@@ -119,38 +119,38 @@ type Exporter struct {
 	// database metrics
 	dbSize            *prometheus.GaugeVec
 	dbNumBackends     *prometheus.GaugeVec
-	dbXactCommit      *prometheus.CounterVec
-	dbXactRollback    *prometheus.CounterVec
-	dbBlksRead        *prometheus.CounterVec
-	dbBlksHit         *prometheus.CounterVec
-	dbTupReturned     *prometheus.CounterVec
-	dbTupFetched      *prometheus.CounterVec
-	dbTupInserted     *prometheus.CounterVec
-	dbTupUpdated      *prometheus.CounterVec
-	dbTupDeleted      *prometheus.CounterVec
-	dbConflicts       *prometheus.CounterVec
-	dbTempFiles       *prometheus.CounterVec
-	dbTempBytes       *prometheus.CounterVec
-	dbDeadlocks       *prometheus.CounterVec
-	dbConflTablespace *prometheus.CounterVec
-	dbConflLock       *prometheus.CounterVec
-	dbConflSnapshot   *prometheus.CounterVec
-	dbConflBufferpin  *prometheus.CounterVec
-	dbConflDeadlock   *prometheus.CounterVec
+	dbXactCommit      *prometheus.GaugeVec
+	dbXactRollback    *prometheus.GaugeVec
+	dbBlksRead        *prometheus.GaugeVec
+	dbBlksHit         *prometheus.GaugeVec
+	dbTupReturned     *prometheus.GaugeVec
+	dbTupFetched      *prometheus.GaugeVec
+	dbTupInserted     *prometheus.GaugeVec
+	dbTupUpdated      *prometheus.GaugeVec
+	dbTupDeleted      *prometheus.GaugeVec
+	dbConflicts       *prometheus.GaugeVec
+	dbTempFiles       *prometheus.GaugeVec
+	dbTempBytes       *prometheus.GaugeVec
+	dbDeadlocks       *prometheus.GaugeVec
+	dbConflTablespace *prometheus.GaugeVec
+	dbConflLock       *prometheus.GaugeVec
+	dbConflSnapshot   *prometheus.GaugeVec
+	dbConflBufferpin  *prometheus.GaugeVec
+	dbConflDeadlock   *prometheus.GaugeVec
 
 	//table metrics
-	tblVacuumCount      *prometheus.CounterVec
-	tblAutoVacuumCount  *prometheus.CounterVec
-	tblAnalyzeCount     *prometheus.CounterVec
-	tblAutoAnalyzeCount *prometheus.CounterVec
-	tblSeqScan          *prometheus.CounterVec
-	tblSeqTupRead       *prometheus.CounterVec
-	tblIdxScan          *prometheus.CounterVec
-	tblIdxTupFetch      *prometheus.CounterVec
-	tblNTupIns          *prometheus.CounterVec
-	tblNTupUpd          *prometheus.CounterVec
-	tblNTupDel          *prometheus.CounterVec
-	tblNTupHotUpd       *prometheus.CounterVec
+	tblVacuumCount      *prometheus.GaugeVec
+	tblAutoVacuumCount  *prometheus.GaugeVec
+	tblAnalyzeCount     *prometheus.GaugeVec
+	tblAutoAnalyzeCount *prometheus.GaugeVec
+	tblSeqScan          *prometheus.GaugeVec
+	tblSeqTupRead       *prometheus.GaugeVec
+	tblIdxScan          *prometheus.GaugeVec
+	tblIdxTupFetch      *prometheus.GaugeVec
+	tblNTupIns          *prometheus.GaugeVec
+	tblNTupUpd          *prometheus.GaugeVec
+	tblNTupDel          *prometheus.GaugeVec
+	tblNTupHotUpd       *prometheus.GaugeVec
 	tblNLiveTup         *prometheus.GaugeVec
 	tblNDeadTup         *prometheus.GaugeVec
 	tblNModSinceAnalyze *prometheus.GaugeVec
@@ -178,38 +178,38 @@ func NewExporter(opts ExporterOpts) *Exporter {
 		// DB metrics
 		dbSize:            prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "db_size"}, databaseLabels),
 		dbNumBackends:     prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "db_numbackends"}, databaseLabels),
-		dbXactCommit:      prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "db_xact_commit"}, databaseLabels),
-		dbXactRollback:    prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "db_xact_rollback"}, databaseLabels),
-		dbBlksRead:        prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "db_blks_read"}, databaseLabels),
-		dbBlksHit:         prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "db_blks_hit"}, databaseLabels),
-		dbTupReturned:     prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "db_tup_returned"}, databaseLabels),
-		dbTupFetched:      prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "db_tup_fetched"}, databaseLabels),
-		dbTupInserted:     prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "db_tup_inserted"}, databaseLabels),
-		dbTupUpdated:      prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "db_tup_updated"}, databaseLabels),
-		dbTupDeleted:      prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "db_tup_deleted"}, databaseLabels),
-		dbConflicts:       prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "db_conflicts"}, databaseLabels),
-		dbTempFiles:       prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "db_temp_files"}, databaseLabels),
-		dbTempBytes:       prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "db_temp_bytes"}, databaseLabels),
-		dbDeadlocks:       prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "db_deadlocks"}, databaseLabels),
-		dbConflTablespace: prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "confl_tablespace"}, databaseLabels),
-		dbConflLock:       prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "confl_lock"}, databaseLabels),
-		dbConflSnapshot:   prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "confl_snapshot"}, databaseLabels),
-		dbConflBufferpin:  prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "confl_bufferpin"}, databaseLabels),
-		dbConflDeadlock:   prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "confl_deadlock"}, databaseLabels),
+		dbXactCommit:      prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "db_xact_commit"}, databaseLabels),
+		dbXactRollback:    prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "db_xact_rollback"}, databaseLabels),
+		dbBlksRead:        prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "db_blks_read"}, databaseLabels),
+		dbBlksHit:         prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "db_blks_hit"}, databaseLabels),
+		dbTupReturned:     prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "db_tup_returned"}, databaseLabels),
+		dbTupFetched:      prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "db_tup_fetched"}, databaseLabels),
+		dbTupInserted:     prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "db_tup_inserted"}, databaseLabels),
+		dbTupUpdated:      prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "db_tup_updated"}, databaseLabels),
+		dbTupDeleted:      prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "db_tup_deleted"}, databaseLabels),
+		dbConflicts:       prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "db_conflicts"}, databaseLabels),
+		dbTempFiles:       prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "db_temp_files"}, databaseLabels),
+		dbTempBytes:       prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "db_temp_bytes"}, databaseLabels),
+		dbDeadlocks:       prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "db_deadlocks"}, databaseLabels),
+		dbConflTablespace: prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "confl_tablespace"}, databaseLabels),
+		dbConflLock:       prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "confl_lock"}, databaseLabels),
+		dbConflSnapshot:   prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "confl_snapshot"}, databaseLabels),
+		dbConflBufferpin:  prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "confl_bufferpin"}, databaseLabels),
+		dbConflDeadlock:   prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "confl_deadlock"}, databaseLabels),
 
 		//table metrics
-		tblVacuumCount:      prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_vacuum_count"}, databaseAndTableLabels),
-		tblAutoVacuumCount:  prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_autovacuum_count"}, databaseAndTableLabels),
-		tblAnalyzeCount:     prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_analyze_count"}, databaseAndTableLabels),
-		tblAutoAnalyzeCount: prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_autoanalyze_count"}, databaseAndTableLabels),
-		tblSeqScan:          prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_seq_scan"}, databaseAndTableLabels),
-		tblSeqTupRead:       prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_seq_tup_read"}, databaseAndTableLabels),
-		tblIdxScan:          prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_idx_scan"}, databaseAndTableLabels),
-		tblIdxTupFetch:      prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_idx_tup_read"}, databaseAndTableLabels),
-		tblNTupIns:          prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_n_tup_ins"}, databaseAndTableLabels),
-		tblNTupUpd:          prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_n_tup_upd"}, databaseAndTableLabels),
-		tblNTupDel:          prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_n_tup_del"}, databaseAndTableLabels),
-		tblNTupHotUpd:       prometheus.NewCounterVec(prometheus.CounterOpts{Name: opts.prefix + "tbl_n_tup_hot_upd"}, databaseAndTableLabels),
+		tblVacuumCount:      prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_vacuum_count"}, databaseAndTableLabels),
+		tblAutoVacuumCount:  prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_autovacuum_count"}, databaseAndTableLabels),
+		tblAnalyzeCount:     prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_analyze_count"}, databaseAndTableLabels),
+		tblAutoAnalyzeCount: prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_autoanalyze_count"}, databaseAndTableLabels),
+		tblSeqScan:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_seq_scan"}, databaseAndTableLabels),
+		tblSeqTupRead:       prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_seq_tup_read"}, databaseAndTableLabels),
+		tblIdxScan:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_idx_scan"}, databaseAndTableLabels),
+		tblIdxTupFetch:      prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_idx_tup_read"}, databaseAndTableLabels),
+		tblNTupIns:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_tup_ins"}, databaseAndTableLabels),
+		tblNTupUpd:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_tup_upd"}, databaseAndTableLabels),
+		tblNTupDel:          prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_tup_del"}, databaseAndTableLabels),
+		tblNTupHotUpd:       prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_tup_hot_upd"}, databaseAndTableLabels),
 		tblNLiveTup:         prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_live_tup"}, databaseAndTableLabels),
 		tblNDeadTup:         prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_dead_tup"}, databaseAndTableLabels),
 		tblNModSinceAnalyze: prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: opts.prefix + "tbl_n_mod_since_analyze"}, databaseAndTableLabels),
@@ -373,24 +373,24 @@ func (e *Exporter) collectDatabases(c chan<- prometheus.Metric, conn *pgx.Conn) 
 
 		gauge(c, e.dbSize, float64(size), datName)
 		gauge(c, e.dbNumBackends, float64(numBackends), datName)
-		counter(c, e.dbXactCommit, float64(xactCommit), datName)
-		counter(c, e.dbXactRollback, float64(xactRollback), datName)
-		counter(c, e.dbBlksRead, float64(blksRead), datName)
-		counter(c, e.dbBlksHit, float64(blksHit), datName)
-		counter(c, e.dbTupReturned, float64(tupReturned), datName)
-		counter(c, e.dbTupFetched, float64(tupFetched), datName)
-		counter(c, e.dbTupInserted, float64(tupInserted), datName)
-		counter(c, e.dbTupUpdated, float64(tupUpdated), datName)
-		counter(c, e.dbTupDeleted, float64(tupDeleted), datName)
-		counter(c, e.dbConflicts, float64(conflicts), datName)
-		counter(c, e.dbTempFiles, float64(tempFiles), datName)
-		counter(c, e.dbTempBytes, float64(tempBytes), datName)
-		counter(c, e.dbDeadlocks, float64(deadlocks), datName)
-		counter(c, e.dbConflTablespace, float64(conflTablespace), datName)
-		counter(c, e.dbConflLock, float64(conflLock), datName)
-		counter(c, e.dbConflSnapshot, float64(conflSnapshot), datName)
-		counter(c, e.dbConflBufferpin, float64(conflBufferpin), datName)
-		counter(c, e.dbConflDeadlock, float64(conflDeadlock), datName)
+		gauge(c, e.dbXactCommit, float64(xactCommit), datName)
+		gauge(c, e.dbXactRollback, float64(xactRollback), datName)
+		gauge(c, e.dbBlksRead, float64(blksRead), datName)
+		gauge(c, e.dbBlksHit, float64(blksHit), datName)
+		gauge(c, e.dbTupReturned, float64(tupReturned), datName)
+		gauge(c, e.dbTupFetched, float64(tupFetched), datName)
+		gauge(c, e.dbTupInserted, float64(tupInserted), datName)
+		gauge(c, e.dbTupUpdated, float64(tupUpdated), datName)
+		gauge(c, e.dbTupDeleted, float64(tupDeleted), datName)
+		gauge(c, e.dbConflicts, float64(conflicts), datName)
+		gauge(c, e.dbTempFiles, float64(tempFiles), datName)
+		gauge(c, e.dbTempBytes, float64(tempBytes), datName)
+		gauge(c, e.dbDeadlocks, float64(deadlocks), datName)
+		gauge(c, e.dbConflTablespace, float64(conflTablespace), datName)
+		gauge(c, e.dbConflLock, float64(conflLock), datName)
+		gauge(c, e.dbConflSnapshot, float64(conflSnapshot), datName)
+		gauge(c, e.dbConflBufferpin, float64(conflBufferpin), datName)
+		gauge(c, e.dbConflDeadlock, float64(conflDeadlock), datName)
 	}
 
 	return databases
@@ -449,18 +449,18 @@ func (e *Exporter) collectTables(c chan<- prometheus.Metric, database string) {
 			return
 		}
 
-		counter(c, e.tblVacuumCount, float64(vacuumCount), database, relname)
-		counter(c, e.tblAutoVacuumCount, float64(autoVacuumCount), database, relname)
-		counter(c, e.tblAnalyzeCount, float64(analyzeCount), database, relname)
-		counter(c, e.tblAutoAnalyzeCount, float64(autoAnalyzeCount), database, relname)
-		counter(c, e.tblSeqScan, float64(seqScan), database, relname)
-		counter(c, e.tblSeqTupRead, float64(seqTupRead), database, relname)
-		counter(c, e.tblIdxScan, float64(idxScan), database, relname)
-		counter(c, e.tblIdxTupFetch, float64(idxTupFetch), database, relname)
-		counter(c, e.tblNTupIns, float64(nTupIns), database, relname)
-		counter(c, e.tblNTupUpd, float64(nTupUpd), database, relname)
-		counter(c, e.tblNTupDel, float64(nTupDel), database, relname)
-		counter(c, e.tblNTupHotUpd, float64(nTupHotUpd), database, relname)
+		gauge(c, e.tblVacuumCount, float64(vacuumCount), database, relname)
+		gauge(c, e.tblAutoVacuumCount, float64(autoVacuumCount), database, relname)
+		gauge(c, e.tblAnalyzeCount, float64(analyzeCount), database, relname)
+		gauge(c, e.tblAutoAnalyzeCount, float64(autoAnalyzeCount), database, relname)
+		gauge(c, e.tblSeqScan, float64(seqScan), database, relname)
+		gauge(c, e.tblSeqTupRead, float64(seqTupRead), database, relname)
+		gauge(c, e.tblIdxScan, float64(idxScan), database, relname)
+		gauge(c, e.tblIdxTupFetch, float64(idxTupFetch), database, relname)
+		gauge(c, e.tblNTupIns, float64(nTupIns), database, relname)
+		gauge(c, e.tblNTupUpd, float64(nTupUpd), database, relname)
+		gauge(c, e.tblNTupDel, float64(nTupDel), database, relname)
+		gauge(c, e.tblNTupHotUpd, float64(nTupHotUpd), database, relname)
 		gauge(c, e.tblNLiveTup, float64(nLiveTup), database, relname)
 		gauge(c, e.tblNDeadTup, float64(nDeadTup), database, relname)
 		gauge(c, e.tblNModSinceAnalyze, float64(nModSinceAnalyze), database, relname)
@@ -476,17 +476,6 @@ func gauge(c chan<- prometheus.Metric, g *prometheus.GaugeVec, value float64, la
 		c <- gauge
 	}
 }
-
-func counter(c chan<- prometheus.Metric, cnt *prometheus.CounterVec, value float64, labels ...string) {
-	counter, err := cnt.GetMetricWithLabelValues(labels...)
-	if err != nil {
-		log.Error().Err(err).Msg("failed to create counter")
-	} else {
-		counter.Add(value)
-		c <- counter
-	}
-}
-
 func parseExclude(exclude string) Exclude {
 	exclude = strings.TrimSpace(exclude)
 	if len(exclude) == 0 {
